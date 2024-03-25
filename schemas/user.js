@@ -23,11 +23,11 @@ const resolvers = {
   Query: {
     user: async (_, args) => {
       try {
-        if(!args._id) {
-          throw new GraphQLError("Id not found", {
+        if (!args._id) {
+          throw new GraphQLError("Not Found", {
             extensions: {
-              code: "NOT_FOUND"
-            }
+              code: "NOT_FOUND",
+            },
           });
         }
         const user = await User.findById(args._id);
@@ -43,16 +43,16 @@ const resolvers = {
       } catch (error) {
         throw error;
       }
-    }
+    },
   },
   Mutation: {
-    createUser: async (_, {name, username, email, password}) => {
+    createUser: async (_, { name, username, email, password }) => {
       try {
         const newUser = {
           name,
           username,
           email,
-          password
+          password,
         };
         const result = await User.createOne(newUser);
         newUser._id = result.insertedId;
@@ -62,17 +62,17 @@ const resolvers = {
         throw error;
       }
     },
-    loginUser: async (_, {username, password}) => {
+    loginUser: async (_, { username, password }) => {
       try {
-        const user = await User.findOne({username, password});
-        if(!user) {
+        const user = await User.findOne({ username, password });
+        if (!user) {
           throw new GraphQLError("Invalid credentials", {
             extensions: {
-              code: "INVALID_CREDENTIALS"
-            }
-          })
+              code: "INVALID_CREDENTIALS",
+            },
+          });
         }
-      } catch(error) {
+      } catch (error) {
         throw error;
       }
     },
@@ -81,5 +81,5 @@ const resolvers = {
 
 module.exports = {
   typeDefs,
-  resolvers
+  resolvers,
 };
