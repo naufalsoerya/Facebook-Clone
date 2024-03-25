@@ -11,6 +11,7 @@ const client = new MongoClient(uri, {
   }
 });
 
+
 const database = client.db("GC01-P3");
 
 module.exports = { database }
