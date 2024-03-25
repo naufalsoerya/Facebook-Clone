@@ -1,27 +1,41 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
+
 const {
   typeDefs: typeDefsUser,
   resolvers: resolversUser,
 } = require('./schema/user');
+const {
+  typeDefs: typeDefsPost,
+  resolvers: resolversPost,
+} = require('./schema/post');
+const {
+  typeDefs: typeDefsFollow,
+  resolvers: resolversFollow,
+} = require('./schema/follow');
 
-const books = [
-  {
-    title: "The Awakening",
-    author: "Kate Chopin",
-  },
-  {
-    title: "City of Glass",
-    author: "Paul Auster",
-  },
-];
+const server = new ApolloServer({
+  typeDefs: [
+    typeDefsUser,
+    typeDefsPost,
+    typeDefsFollow,
+  ],
+  resolvers: [
+    resolversUser,
+    resolversPost,
+    resolversFollow,
+  ],
+  introspection: true,
+});
 
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
-};
-
-startStandaloneServer(server, {
-  listen: { port: 4000 }
-}).then(({ url }) => console.log(`🚀 Server ready at ${url}`));
+(async () => {
+  const { url } = await startStandaloneServer(server, {
+    listen: {port: 3000},
+    context: () => {
+      return {
+        id: "123",
+      };
+    },
+  });
+  console.log(`🚀 Server ready at ${url}`);
+})();
