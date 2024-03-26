@@ -15,6 +15,7 @@ const typeDefs = `#graphql
     createdAt: Date
     updatedAt: Date
   }
+
   type Comments {
     content: String!
     username: String!
@@ -28,11 +29,12 @@ const typeDefs = `#graphql
   }
   type Query {
     posts: [Post]
+    post(_id: ID): Post
   }
   type Mutation {
     createPost(content: String!, tags: [String], imgUrl: String, authodId: ID!): Post
-    commentPost(_id: ID!, content: String!): Post
-    likePost(_id: ID!): Post
+    commentPost(_id: ID, content: String!): Post
+    likePost(_id: ID): Post
   }
 `;
 
@@ -42,6 +44,18 @@ const resolvers = {
       try {
         const posts = await Post.findAll();
         return posts;
+      } catch (error) {
+        throw error;
+      }
+    },
+    post: async (_, args, contextValue) => {
+      try {
+        contextValue.auth();
+        if (!args._id) throw new Error("Id is required");
+
+        const post = await Post.findById(args._id);
+
+        return post;
       } catch (error) {
         throw error;
       }

@@ -1,4 +1,4 @@
-const { objectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const { database } = require("../config/mongo");
 
 class Post {
@@ -13,9 +13,9 @@ class Post {
 
   static async findById(id) {
     const post = await this.postCollection().findOne({
-      _id: new objectId(String(id))
+      _id: new ObjectId(String(id))
     });
-    return post
+    return post;
   }
 
   static async createOne(payload) {
