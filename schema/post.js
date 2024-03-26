@@ -1,7 +1,9 @@
 const { GraphQLError } = require("graphql");
-const Post = require("../models/Post");
+const Post = require("../models/post");
 
 const typeDefs = `#graphql
+  scalar Date
+
   type Post {
     _id: ID
     content: String!

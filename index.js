@@ -1,5 +1,6 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
+const { verifyToken } = require("./helpers/jwt");
 
 const {
   typeDefs: typeDefsUser,
@@ -31,9 +32,19 @@ const server = new ApolloServer({
 (async () => {
   const { url } = await startStandaloneServer(server, {
     listen: {port: 3000},
-    context: () => {
+    context: ({req, res}) => {
       return {
         id: "123",
+        auth: () => {
+          const auth = req.headers.authorization;
+          if(!auth) throw new Error('Authorization token is required');
+          const token = auth.split(" ")[1];
+          
+          const decoded = verifyToken(token)
+          if(!decoded) throw new Error('Invalid or expired token')
+
+          return decoded;
+        }
       };
     },
   });

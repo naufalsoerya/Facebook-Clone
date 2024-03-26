@@ -1,7 +1,9 @@
 const { GraphQLError } = require("graphql");
-const Follow = require("../models/Post");
+const Follow = require("../models/post");
 
 const typeDefs = `#graphql
+  scalar Date
+
   type Follow {
     _id: ID
     followingId: ID

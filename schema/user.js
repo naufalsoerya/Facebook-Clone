@@ -1,28 +1,45 @@
 const { GraphQLError } = require("graphql");
-const User = require("../model/User");
+const User = require("../models/User");
+const { comparePassword, hashPassword } = require("../helpers/bcrypt");
+const { signToken } = require("../helpers/jwt");
 
 const typeDefs = `#graphql
+    scalar Date
+
     type User {
-        _id: ID
-        name: String
-        username: String!
-        email: String!
-        password: String!
+      _id: ID
+      name: String
+      username: String!
+      email: String!
+      password: String!
+      followerDetail: [UserDetail]
+      followingDetail: [UserDetail]
+    }
+    type UserDetail {
+      _id: ID
+      name: String
+      username: String!
+      email: String!
+      password: String!
+    }
+    type Token {
+      accessToken: String
     }
     type Query {
-        user(_id: ID): User
-        users: [User]
+      user(_id: ID): User
+      users: [User]
     }
     type Mutation {
-        createUser(name: String, username: String!, email: String!, password: String!): User
-        loginUser(username: String!, password: String!): User
+      createUser(name: String, username: String!, email: String!, password: String!): User
+      loginUser(username: String!, password: String): Token
     }
 `;
 
 const resolvers = {
   Query: {
-    user: async (_, args) => {
+    user: async (_, args, contextValue) => {
       try {
+        contextValue.auth();
         if (!args._id) {
           throw new GraphQLError("Not Found", {
             extensions: {
@@ -52,7 +69,7 @@ const resolvers = {
           name,
           username,
           email,
-          password,
+          password: hashPassword(password)
         };
         const result = await User.createOne(newUser);
         newUser._id = result.insertedId;
@@ -62,16 +79,30 @@ const resolvers = {
         throw error;
       }
     },
-    loginUser: async (_, { username, password }) => {
+    loginUser: async (_, args) => {
       try {
-        const user = await User.findOne({ username, password });
+        const { username, password } = args;
+        if(!username) throw new Error ("Username is required");
+        if(!password) throw new Error ("Password is required");
+        
+        const user = await User.findByUsername(username);
         if (!user) {
-          throw new GraphQLError("Invalid credentials", {
-            extensions: {
-              code: "INVALID_CREDENTIALS",
-            },
-          });
+          throw new Error( "Invalid Username/Password" );
         }
+
+        const validate = comparePassword(password, user.password);
+        if (!validate) {
+          throw new Error( "Invalid Username/Password" );
+        }
+
+        const token = {
+          accessToken: signToken({
+            id: user._id,
+            username: username
+          }),
+        };
+
+        return token;
       } catch (error) {
         throw error;
       }
