@@ -7,13 +7,30 @@ class Post {
   }
 
   static async findAll() {
-    const posts = await this.postCollection().find().toArray();
-    return posts;
+    const agg = [
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $lookup: {
+          from: "Users",
+          localField: "authorId",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+    ];
+    const cursor = this.postCollection().aggregate(agg);
+    const result = await cursor.toArray();
+    
+    return result;
   }
 
   static async findById(id) {
     const post = await this.postCollection().findOne({
-      _id: new ObjectId(String(id))
+      _id: new ObjectId(String(id)),
     });
     return post;
   }

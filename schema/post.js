@@ -58,20 +58,22 @@ const resolvers = {
       } catch (error) {
         throw error;
       }
+
     },
   },
   Mutation: {
-    createPost: async (_, { content, tags, imgUrl, authorId }, contextValue) => {
+    createPost: async (_, { content, tags, imgUrl }, contextValue) => {
       try {
-        contextValue.auth();
+        const currentUser = contextValue.auth();
         if (!content) throw new Error("Content is required");
-        if (!authorId) throw new Error("Author ID is required");
+        if (!currentUser.id) throw new Error("Author ID is required");
 
+        console.log(currentUser);
         const newPost = {
           content,
           tags,
           imgUrl,
-          authorId,
+          authorId: currentUser.id,
           comments: [],
           likes: [],
           createdAt: new Date().toISOString(),
