@@ -9,13 +9,12 @@ const typeDefs = `#graphql
     content: String!
     tags: [String]
     imgUrl: String
-    authodId: ID! 
+    authorId: ID! 
     comments: [Comments]
     likes: [Likes]
     createdAt: Date
     updatedAt: Date
   }
-
   type Comments {
     content: String!
     username: String!
@@ -32,7 +31,7 @@ const typeDefs = `#graphql
     post(_id: ID): Post
   }
   type Mutation {
-    createPost(content: String!, tags: [String], imgUrl: String, authodId: ID!): Post
+    createPost(content: String!, tags: [String], imgUrl: String, authorId: ID!): Post
     commentPost(_id: ID, content: String!): Post
     likePost(_id: ID): Post
   }
@@ -62,13 +61,21 @@ const resolvers = {
     },
   },
   Mutation: {
-    createPost: async (_, { content, tags, imgUrl, authodId }) => {
+    createPost: async (_, { content, tags, imgUrl, authorId }, contextValue) => {
       try {
+        contextValue.auth();
+        if (!content) throw new Error("Content is required");
+        if (!authorId) throw new Error("Author ID is required");
+
         const newPost = {
           content,
           tags,
           imgUrl,
-          authodId,
+          authorId,
+          comments: [],
+          likes: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         const result = await Post.createOne(newPost);
         newPost._id = result.insertedId;
@@ -78,46 +85,45 @@ const resolvers = {
         throw error;
       }
     },
-    commentPost: async (_, args) => {
+    commentPost: async (_, {content, _id}, contextValue) => {
       try {
-        if (!args._id) {
-          throw new GraphQLError("Not Found", {
-            extensions: {
-              code: "NOT_FOUND",
-            },
-          });
-        }
+        const currentUser = contextValue.auth();
+        if (!content) throw new Error("Content is required");
+        if (!currentUser.username) throw new Error("Username is required");
+        if (!_id) throw new Error("Id not found");
+
         const newComment = {
-          content: args.content,
-          username,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          content,
+          username: currentUser.username,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
-        const post = await Post.findById(args._id);
-        const result = post.comments.push(newComment);
+        const result = await Post.updateOne(
+          _id,
+          { comments: newComment } 
+        );
 
         return result;
       } catch (error) {
         throw error;
       }
     },
-    likePost: async (_, args) => {
+    likePost: async (_, {_id}, contextValue) => {
       try {
-        if (!args._id) {
-          throw new GraphQLError("Not Found", {
-            extensions: {
-              code: "NOT_FOUND",
-            },
-          });
-        }
+        const currentLike = contextValue.auth();
+        console.log(currentLike);
+        if (!_id) throw new Error("Id not found");
+        if (!currentLike.username) throw new Error("Username is required");
+        
         const newLike = {
-          username,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          username: currentLike.username,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
-        const post = await Post.findById(args._id);
-        const result = post.likes.push(newLike);
-
+        const result = await Post.updateOne(
+          _id,
+          { likes: newLike } 
+        );
         return result;
       } catch (error) {
         throw error;

@@ -1,5 +1,6 @@
 const { GraphQLError } = require("graphql");
-const Follow = require("../models/post");
+const Follow = require("../models/follow");
+const { ObjectId } = require("mongodb");
 
 const typeDefs = `#graphql
   scalar Date
@@ -18,18 +19,22 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Mutation: {
-    followUser: async (_, args) => {
-      try {
-        const newFollow = {
-          followingId: args._id,
-          followerId: username,
-        };
-        const result = await Follow.createOne(newFollow);
+    followUser: async (_, { _id }, contextValue) => {
+      contextValue.auth();
+      const data = contextValue.auth();
 
-        return result;
-      } catch (error) {
-        throw error;
-      }
+      const followerId = new ObjectId(String(data.id));
+      const followingId = new ObjectId(String(_id));
+
+      const newFollow = {
+        followingId,
+        followerId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const result = await Follow.createFollow(newFollow);
+      newFollow._id = result.insertedId;
+      return newFollow;
     },
   },
 };

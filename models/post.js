@@ -22,6 +22,14 @@ class Post {
     const newPost = await this.postCollection().insertOne(payload);
     return newPost;
   }
+
+  static async updateOne(id, update) {
+    const post = await this.postCollection().updateOne(
+      { _id: new ObjectId(String(id)) },
+      { $push: update }
+    );
+    return post;
+  }
 }
 
 module.exports = Post;
