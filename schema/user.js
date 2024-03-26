@@ -11,7 +11,7 @@ const typeDefs = `#graphql
       name: String
       username: String!
       email: String!
-      password: String!
+      password: String
       followerDetail: [UserDetail]
       followingDetail: [UserDetail]
     }
@@ -27,7 +27,7 @@ const typeDefs = `#graphql
     }
     type Query {
       user(_id: ID): User
-      users: [User]
+      searchUsers(username: String!): User
     }
     type Mutation {
       createUser(name: String, username: String!, email: String!, password: String!): User
@@ -40,23 +40,26 @@ const resolvers = {
     user: async (_, args, contextValue) => {
       try {
         contextValue.auth();
-        if (!args._id) {
-          throw new GraphQLError("Not Found", {
-            extensions: {
-              code: "NOT_FOUND",
-            },
-          });
-        }
-        const user = await User.findById(args._id);
+        if (!args._id) throw new Error ("Id is required");
+
+        const user = await User.getDetail(args._id);
+
         return user;
       } catch (error) {
         throw error;
       }
     },
-    users: async () => {
+    searchUsers: async (_, args) => {
       try {
-        const users = await User.findAll();
-        return users;
+        const { username } = args;
+        if(!username) throw new Error ("Username is required");
+
+        const user = await User.findByUsername(username);
+        if (!user) {
+          throw new Error( "Invalid Username/Password" );
+        }
+
+        return user;
       } catch (error) {
         throw error;
       }

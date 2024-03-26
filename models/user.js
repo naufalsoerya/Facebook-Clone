@@ -1,4 +1,4 @@
-const { objectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const { database } = require("../config/mongo");
 
 class User {
@@ -6,15 +6,11 @@ class User {
     return database.collection("users");
   }
 
-  static async findAll() {
-    const users = await this.userCollection().find().toArray();
-    return users;
-  }
-
   static async findById(id) {
     const user = await this.userCollection().findOne({
-      _id: new objectId(String(id)),
+      _id: new ObjectId(String(id)),
     });
+    // console.log(user);
     return user;
   }
 
@@ -34,7 +30,7 @@ class User {
     const agg = [
       {
         $match: {
-          _id: new objectId(String(id))
+          _id: new ObjectId(String(id))
         },
       },
       {
@@ -78,7 +74,7 @@ class User {
       },
     ];
 
-    const cursor = this.collection().aggregate(agg);
+    const cursor = this.userCollection().aggregate(agg);
     const result = await cursor.toArray();
     return result[0];
   }
