@@ -3,6 +3,9 @@ const Tab = createBottomTabNavigator();
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import CreatePost from "../screens/CreatePostScreen";
 import HomeScreen from "../screens/HomeScreen";
+import PostDetail from "../screens/PostDetailScreen";
+import Search from "../screens/SearchScreen";
+import Profile from "../screens/ProfileScreen";
 
 function TabNavigator() {
   return (
@@ -32,7 +35,25 @@ function TabNavigator() {
         component={CreatePost} 
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="human-greeting-variant" color={color} size={size} />
+            <MaterialCommunityIcons name="plus" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="Search" 
+        component={Search} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="magnify" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={Profile} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="account-multiple" color={color} size={size} />
           ),
         }}
       />
