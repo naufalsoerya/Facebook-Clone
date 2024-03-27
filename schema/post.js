@@ -1,15 +1,16 @@
-const { GraphQLError } = require("graphql");
 const Post = require("../models/post");
+const redis = require('../config/redis');
+const { ObjectId } = require("mongodb");
 
 const typeDefs = `#graphql
   scalar Date
 
   type Post {
     _id: ID
-    content: String!
+    content: String
     tags: [String]
     imgUrl: String
-    authorId: ID! 
+    authorId: ID 
     comments: [Comments]
     likes: [Likes]
     createdAt: Date
@@ -31,7 +32,7 @@ const typeDefs = `#graphql
     post(_id: ID): Post
   }
   type Mutation {
-    createPost(content: String!, tags: [String], imgUrl: String, authorId: ID!): Post
+    createPost(content: String!, tags: [String], imgUrl: String): Post
     commentPost(_id: ID, content: String!): Post
     likePost(_id: ID): Post
   }
@@ -41,8 +42,13 @@ const resolvers = {
   Query: {
     posts: async () => {
       try {
-        const posts = await Post.findAll();
-        return posts;
+        const redisPost = await redis.get("post");
+        if(redisPost) {
+          return JSON.parse(redisPost)
+        } else {
+          const posts = await Post.findAll();
+          return posts;
+        }
       } catch (error) {
         throw error;
       }
@@ -53,8 +59,9 @@ const resolvers = {
         if (!args._id) throw new Error("Id is required");
 
         const post = await Post.findById(args._id);
+        console.log(post);
 
-        return post;
+        return post[0];
       } catch (error) {
         throw error;
       }
@@ -65,15 +72,16 @@ const resolvers = {
     createPost: async (_, { content, tags, imgUrl }, contextValue) => {
       try {
         const currentUser = contextValue.auth();
-        if (!content) throw new Error("Content is required");
-        if (!currentUser.id) throw new Error("Author ID is required");
+        const authorId = new ObjectId(String(currentUser.id));
 
-        console.log(currentUser);
+        if (!content) throw new Error("Content is required");
+        if (!authorId) throw new Error("Author ID is required");
+
         const newPost = {
           content,
           tags,
           imgUrl,
-          authorId: currentUser.id,
+          authorId,
           comments: [],
           likes: [],
           createdAt: new Date().toISOString(),
@@ -81,6 +89,8 @@ const resolvers = {
         };
         const result = await Post.createOne(newPost);
         newPost._id = result.insertedId;
+
+        await redis.del("posts");
 
         return newPost;
       } catch (error) {
@@ -100,12 +110,12 @@ const resolvers = {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-        const result = await Post.updateOne(
+        await Post.updateOne(
           _id,
           { comments: newComment } 
         );
-
-        return result;
+    
+        return newComment;
       } catch (error) {
         throw error;
       }
@@ -122,11 +132,11 @@ const resolvers = {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-        const result = await Post.updateOne(
+        await Post.updateOne(
           _id,
           { likes: newLike } 
         );
-        return result;
+        return newLike;
       } catch (error) {
         throw error;
       }

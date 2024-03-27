@@ -24,15 +24,30 @@ class Post {
     ];
     const cursor = this.postCollection().aggregate(agg);
     const result = await cursor.toArray();
-    
+
     return result;
   }
 
   static async findById(id) {
-    const post = await this.postCollection().findOne({
-      _id: new ObjectId(String(id)),
-    });
-    return post;
+    const agg = [
+      {
+        $match: {
+          _id: new ObjectId(String(id))
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "authorId",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+    ];
+    const cursor = this.postCollection().aggregate(agg);
+    const result = await cursor.toArray();
+
+    return result;
   }
 
   static async createOne(payload) {
