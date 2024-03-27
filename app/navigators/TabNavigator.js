@@ -3,7 +3,6 @@ const Tab = createBottomTabNavigator();
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import CreatePost from "../screens/CreatePostScreen";
 import HomeScreen from "../screens/HomeScreen";
-import PostDetail from "../screens/PostDetailScreen";
 import Search from "../screens/SearchScreen";
 import Profile from "../screens/ProfileScreen";
 
@@ -12,9 +11,9 @@ function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#f4511e",
+          backgroundColor: "#3b5998",
         },
-        headerTintColor: "fff",
+        headerTintColor: "#fff",
         headerTitleStyle: {
           fontWeigth: "bold",
         },
