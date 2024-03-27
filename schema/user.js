@@ -1,5 +1,5 @@
 const { GraphQLError } = require("graphql");
-const User = require("../models/User");
+const User = require("../models/user");
 const { comparePassword, hashPassword } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
 
@@ -49,8 +49,9 @@ const resolvers = {
         throw error;
       }
     },
-    searchUsers: async (_, args) => {
+    searchUsers: async (_, args, contextValue) => {
       try {
+        contextValue.auth();
         const { username } = args;
         if (!username) throw new Error("Username is required");
 

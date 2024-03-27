@@ -15,6 +15,13 @@ const typeDefs = `#graphql
     likes: [Likes]
     createdAt: Date
     updatedAt: Date
+    author: Author
+  }
+  type Author {
+    _id: ID
+    username: String
+    name: String
+    email: String
   }
   type Comments {
     content: String!
@@ -40,13 +47,17 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Query: {
-    posts: async () => {
+    posts: async (_, __, contextValue) => {
       try {
+        contextValue.auth();
+
         const redisPost = await redis.get("post");
         if(redisPost) {
           return JSON.parse(redisPost)
         } else {
           const posts = await Post.findAll();
+          await redis.set("post", JSON.stringify(posts));
+          
           return posts;
         }
       } catch (error) {
@@ -59,7 +70,6 @@ const resolvers = {
         if (!args._id) throw new Error("Id is required");
 
         const post = await Post.findById(args._id);
-        console.log(post);
 
         return post[0];
       } catch (error) {
@@ -123,7 +133,7 @@ const resolvers = {
     likePost: async (_, {_id}, contextValue) => {
       try {
         const currentLike = contextValue.auth();
-        console.log(currentLike);
+ 
         if (!_id) throw new Error("Id not found");
         if (!currentLike.username) throw new Error("Username is required");
         
@@ -134,7 +144,8 @@ const resolvers = {
         };
         await Post.updateOne(
           _id,
-          { likes: newLike } 
+          { likes: newLike },
+          currentLike.username
         );
         return newLike;
       } catch (error) {

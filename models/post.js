@@ -15,13 +15,20 @@ class Post {
       },
       {
         $lookup: {
-          from: "Users",
+          from: "users",
           localField: "authorId",
           foreignField: "_id",
           as: "author",
         },
       },
+      {
+        $unwind: {
+          path: "$author",
+          preserveNullAndEmptyArrays: true,
+        }
+      }
     ];
+
     const cursor = this.postCollection().aggregate(agg);
     const result = await cursor.toArray();
 
@@ -43,6 +50,12 @@ class Post {
           as: "author",
         },
       },
+      {
+        $unwind: {
+          path: "$author",
+          preserveNullAndEmptyArrays: true,
+        }
+      }
     ];
     const cursor = this.postCollection().aggregate(agg);
     const result = await cursor.toArray();
@@ -55,12 +68,46 @@ class Post {
     return newPost;
   }
 
-  static async updateOne(id, update) {
+  static async updateOne(id, update, username) {
+    if (update.likes) {
+      const agg = [
+        {
+          $match: {
+            _id: new ObjectId(String(id)),
+          },
+        },
+      ];
+      const cursor = this.postCollection().aggregate(agg);
+      const result = await cursor.toArray();
+      result[0].likes.forEach((item) => {
+        if (item.username === username) throw new Error("You can't like twice");
+      });
+    }
+
     const post = await this.postCollection().updateOne(
       { _id: new ObjectId(String(id)) },
       { $push: update }
     );
-    return post;
+    
+    if (!post) throw new Error("Post not found");
+    const agg = [
+      {
+        $match: {
+          _id: new ObjectId(String(id)),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "authorId",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+    ];
+    const cursor = this.postCollection().aggregate(agg);
+    const result = await cursor.toArray();
+    return result[0];
   }
 }
 
