@@ -1,4 +1,3 @@
-const { GraphQLError } = require("graphql");
 const User = require("../models/user");
 const { comparePassword, hashPassword } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
