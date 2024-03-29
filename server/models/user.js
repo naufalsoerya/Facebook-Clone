@@ -29,7 +29,7 @@ class User {
     const user = await this.userCollection().findOne({
       email: email
     });
-    
+    return user;
   }
 
   static async getDetail(id) {

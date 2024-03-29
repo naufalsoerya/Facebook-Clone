@@ -15,12 +15,12 @@ function TabNavigator() {
         headerTintColor: "#fff",
         headerTitle: `Facebook`,
         headerTitleAlign: "left",
-        headerRight: () => <LogoutButton />,
         headerTitleStyle: {
           fontWeight: "bold",
           fontFamily: "Helvetica",
           color: "#3b5998",
         },
+        headerRight: () => <LogoutButton />
       }}
     >
       <Tab.Screen
