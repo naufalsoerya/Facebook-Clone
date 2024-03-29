@@ -1,13 +1,13 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { useContext } from "react";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import TabNavigator from "./TabNavigator";
 import PostDetail from "../screens/PostDetailScreen";
-const Stack = createNativeStackNavigator();
 import * as SecureStore from "expo-secure-store";
 import AuthContext from "../context/auth";
-import { NavigationContainer } from "@react-navigation/native";
-import { useContext } from "react";
+const Stack = createNativeStackNavigator();
 
 function StackNavigator() {
   const {isSignedIn, setIsSignedIn} = useContext(AuthContext);
@@ -39,7 +39,9 @@ function StackNavigator() {
               <Stack.Screen
                 name="Home"
                 component={TabNavigator}
-                options={{ headerShown: false }}
+                options={{ 
+                  headerShown: false, 
+                }}
               />
               <Stack.Screen
                 name="PostDetail"

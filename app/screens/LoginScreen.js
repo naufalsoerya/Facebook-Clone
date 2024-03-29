@@ -23,12 +23,10 @@ function LoginScreen({ navigation }) {
 
   const [login, { data, loading, error }] = useMutation(LOGIN, {
     onCompleted: async (data) => {
-      await SecureStore.setItemAsync("accessToken", data?.login.accessToken);
+      await SecureStore.setItemAsync("accessToken", data?.loginUser.accessToken);
       setIsSignedIn(true);
     },
   });
-
-  // const [login, { data, loading, error }] = useMutation(LOGIN);
 
   async function handleSubmit() {
     try {
@@ -65,7 +63,7 @@ function LoginScreen({ navigation }) {
           <View style={styles.inputGroup}>
             <TextInput
               style={styles.input}
-              onChange={setUsername}
+              onChangeText={setUsername}
               value={username}
               placeholder="Username"
             />
@@ -74,7 +72,7 @@ function LoginScreen({ navigation }) {
             <TextInput
               style={styles.input}
               placeholder="Password"
-              onChange={setPassword}
+              onChangeText={setPassword}
               value={password}
               secureTextEntry={true}
             />
@@ -82,20 +80,6 @@ function LoginScreen({ navigation }) {
           <View>
             <TouchableOpacity
               title="Log In"
-              // onPress={async () => {
-              //   try {
-              //     const response = await login({
-              //       variables: {
-              //         email: username,
-              //         password: password
-              //       }
-              //     })
-              //     console.log(response);
-              //     setIsSignedIn(true)
-              //   } catch(error) {
-              //     console.log(error)
-              //   }
-              // }}
               onPress={handleSubmit}
               style={{
                 backgroundColor: "#3b5998",
