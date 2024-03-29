@@ -4,19 +4,52 @@ import RegisterScreen from "../screens/RegisterScreen";
 import TabNavigator from "./TabNavigator";
 import PostDetail from "../screens/PostDetailScreen";
 const Stack = createNativeStackNavigator();
+import * as SecureStore from "expo-secure-store";
+import AuthContext from "../context/auth";
+import { NavigationContainer } from "@react-navigation/native";
+import { useContext } from "react";
 
 function StackNavigator() {
+  const {isSignedIn, setIsSignedIn} = useContext(AuthContext);
+  (async () => {
+    const accessToken = await SecureStore.getItemAsync("accessToken");
+    if (accessToken) {
+      setIsSignedIn(true);
+    }
+  })();
+
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-      <Stack.Screen 
-        name="Home" 
-        component={TabNavigator} 
-        options={{headerShown: false}}
-      />
-      <Stack.Screen name="PostDetail" component={PostDetail} />
-    </Stack.Navigator>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {!isSignedIn ? (
+            <>
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Register"
+                component={RegisterScreen}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="Home"
+                component={TabNavigator}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="PostDetail"
+                component={PostDetail}
+                options={{ headerShown: false }}
+              />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
   );
 }
 

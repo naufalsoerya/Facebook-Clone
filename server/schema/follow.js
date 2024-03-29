@@ -1,4 +1,3 @@
-const { GraphQLError } = require("graphql");
 const Follow = require("../models/follow");
 const { ObjectId } = require("mongodb");
 
