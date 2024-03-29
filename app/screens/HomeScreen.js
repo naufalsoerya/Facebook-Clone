@@ -1,4 +1,7 @@
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+const Tab = createBottomTabNavigator();
 
 function HomeScreen({ navigation }) {
   return (
@@ -10,13 +13,27 @@ function HomeScreen({ navigation }) {
         />
         <Text style={styles.username}>Username</Text>
       </View>
+      <View style={styles.footer}>
+        <Text>Description of the photo will be here.</Text>
+      </View>
       <Image
         source={{ uri: "https://via.placeholder.com/300" }}
         style={styles.image}
       />
-      <View style={styles.footer}>
-        <Text style={styles.caption}>Caption</Text>
-        <Text>Description of the photo will be here.</Text>
+      <View
+        style={{
+          borderBottomWidth: 1,
+          borderColor: "#D3D3D3",
+          alignContent: "center",
+          marginVertical: 15,
+          justifyContent: "center",
+          alignItems: "center",
+          marginEnd: 22,
+          marginStart: 22,
+        }}
+      ></View>
+      <View>
+        <Text>halo</Text>
       </View>
     </View>
   );
