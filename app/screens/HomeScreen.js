@@ -1,77 +1,50 @@
-import { View, Text, Image, StyleSheet } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-const Tab = createBottomTabNavigator();
+import Card from "../components/Card";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  View,
+} from "react-native";
+import { useQuery } from "@apollo/client";
+import { useCallback, useState } from "react";
+import GET_ALL_POST from "../queries/GetAllPost";
 
 function HomeScreen({ navigation }) {
-  return (
-    <View style={styles.card}>
-      <View style={styles.header}>
-        <Image
-          source={{ uri: "https://via.placeholder.com/50" }}
-          style={styles.avatar}
-        />
-        <Text style={styles.username}>Username</Text>
-      </View>
-      <View style={styles.footer}>
-        <Text>Description of the photo will be here.</Text>
-      </View>
-      <Image
-        source={{ uri: "https://via.placeholder.com/300" }}
-        style={styles.image}
-      />
-      <View
-        style={{
-          borderBottomWidth: 1,
-          borderColor: "#D3D3D3",
-          alignContent: "center",
-          marginVertical: 15,
-          justifyContent: "center",
-          alignItems: "center",
-          marginEnd: 22,
-          marginStart: 22,
-        }}
-      ></View>
-      <View>
-        <Text>halo</Text>
-      </View>
-    </View>
-  );
-}
+  const { loading, error, data, refetch } = useQuery(GET_ALL_POST, {
+    notifyOnNetworkStatusChange: true,
+  });
+  const [refreshing, setRefreshing] = useState(false);
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    marginBottom: 20,
-    overflow: "hidden",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-  },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  username: {
-    fontWeight: "bold",
-  },
-  image: {
-    width: "100%",
-    height: 200,
-  },
-  footer: {
-    padding: 10,
-  },
-  caption: {
-    fontWeight: "bold",
-  },
-});
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, []);
+
+  if (loading)
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#00ff00" />
+      </View>
+    );
+  return (
+    <>
+      <View style={{flex: 1}}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+        >
+          {data?.posts.map((post, index) => {
+            return <Card key={index} post={post} />
+          })}
+        </ScrollView>
+      </View>
+    </>
+  )
+}
 
 export default HomeScreen;
