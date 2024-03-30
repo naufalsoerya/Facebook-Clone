@@ -9,16 +9,16 @@ function Card({post}) {
       <View style={styles.card}>
         <View style={styles.header}>
           <Image
-            source={{ uri: "https://via.placeholder.com/50" }}
+            source={{ uri: "https://picsum.photos/200/500" }}
             style={styles.avatar}
           />
-          <Text style={styles.username}>Username</Text>
+          <Text style={styles.username}>{post.author.username}</Text>
         </View>
         <View style={styles.footer}>
-          <Text>Description of the photo will be here.</Text>
+          <Text>{post.content}</Text>
         </View>
         <Image
-          source={{ uri: "https://via.placeholder.com/300" }}
+          source={{ uri: post.imgUrl }}
           style={styles.image}
         />
         <View style={styles.line}></View>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 250,
   },
   footer: {
     padding: 10,

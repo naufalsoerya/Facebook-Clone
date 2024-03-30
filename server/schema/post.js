@@ -51,12 +51,12 @@ const resolvers = {
       try {
         contextValue.auth();
 
-        const redisPost = await redis.get("post");
+        const redisPost = await redis.get("posts");
         if(redisPost) {
           return JSON.parse(redisPost)
         } else {
           const posts = await Post.findAll();
-          await redis.set("post", JSON.stringify(posts));
+          await redis.set("posts", JSON.stringify(posts));
           
           return posts;
         }
