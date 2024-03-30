@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   inputGroup: {
     gap: 5,
     backgroundColor: "#F8F0F0",
-    marginEnd: 20,
+    marginEnd: 10,
     marginStart: 20,
   },
 });

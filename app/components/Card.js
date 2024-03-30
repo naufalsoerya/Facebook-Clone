@@ -1,28 +1,34 @@
 import { View, Text, Image, StyleSheet } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-const Tab = createBottomTabNavigator();
+import { TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 
-function Card({post}) {
+function Card({ post }) {
   return (
     <>
       <View style={styles.card}>
         <View style={styles.header}>
           <Image
-            source={{ uri: "https://picsum.photos/200/500" }}
+            source={{ uri: "https://picsum.photos/100/500" }}
             style={styles.avatar}
           />
           <Text style={styles.username}>{post.author.username}</Text>
         </View>
         <View style={styles.footer}>
-          <Text>{post.content}</Text>
+          <Text style={styles.caption}>{post.content}</Text>
         </View>
-        <Image
-          source={{ uri: post.imgUrl }}
-          style={styles.image}
-        />
+        <Image source={{ uri: post.imgUrl }} style={styles.image} />
         <View style={styles.line}></View>
-        <View></View>
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.button}>
+            <Icon name="thumbs-up" size={18} color="gray" />
+            <Text style={styles.text}>Like</Text> 
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Icon name="comments" size={18} color="gray" /> 
+            <Text style={styles.text}>Comment</Text> 
+          </TouchableOpacity>
+        </View>
+        <View style={styles.line}></View>
       </View>
     </>
   );
@@ -47,6 +53,24 @@ const styles = StyleSheet.create({
     marginEnd: 12,
     marginStart: 12,
   },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'start',
+    marginTop: 0,
+    marginStart: 0,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'start',
+    paddingLeft: 35
+  },
+  text: {
+    marginStart: 10,
+    color: "gray",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -69,7 +93,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   caption: {
-    fontWeight: "bold",
+    fontSize: 16
   },
 });
 
