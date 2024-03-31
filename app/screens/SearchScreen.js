@@ -56,10 +56,9 @@ function Search() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
-    borderRadius: 50,
-    padding: 30,
-    margin: 40,
+    flex: 1,
+    paddingTop: 20,
+    paddingHorizontal: 10,
   },
   searchInput: {
     height: 40,

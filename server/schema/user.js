@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const { comparePassword, hashPassword } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
+const { ObjectId } = require("mongodb");
 
 const typeDefs = `#graphql
     scalar Date
@@ -38,10 +39,13 @@ const resolvers = {
   Query: {
     user: async (_, args, contextValue) => {
       try {
-        contextValue.auth();
-        if (!args._id) throw new Error("Id is required");
+        const currentUser = contextValue.auth();
+        // console.log(currentUser, "<<<<");
+        const id = new ObjectId(String(currentUser.id));
 
-        const user = await User.getDetail(args._id);
+        if (!id) throw new Error("Id is required");
+
+        const user = await User.getDetail(id);
 
         return user;
       } catch (error) {

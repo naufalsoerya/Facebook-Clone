@@ -7,6 +7,7 @@ import TabNavigator from "./TabNavigator";
 import PostDetail from "../screens/PostDetailScreen";
 import * as SecureStore from "expo-secure-store";
 import AuthContext from "../context/auth";
+import Profile from "../screens/ProfileScreen";
 const Stack = createNativeStackNavigator();
 
 function StackNavigator() {
@@ -46,6 +47,11 @@ function StackNavigator() {
               <Stack.Screen
                 name="PostDetail"
                 component={PostDetail}
+                options={{ headerShown: true }}
+              />
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
                 options={{ headerShown: true }}
               />
             </>

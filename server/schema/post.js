@@ -94,6 +94,7 @@ const resolvers = {
           authorId,
           comments: [],
           likes: [],
+          
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };

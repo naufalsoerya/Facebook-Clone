@@ -5,6 +5,7 @@ import HomeScreen from "../screens/HomeScreen";
 import Search from "../screens/SearchScreen";
 import Profile from "../screens/ProfileScreen";
 import LogoutButton from "../context/LogOut";
+import ProfileUser from "../screens/ProfileUser";
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
@@ -51,8 +52,8 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={Profile}
+        name="ProfileUser"
+        component={ProfileUser}
         initialParams={""}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -64,6 +65,7 @@ function TabNavigator() {
           ),
         }}
       />
+
     </Tab.Navigator>
   );
 }
