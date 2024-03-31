@@ -1,6 +1,7 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
 const { verifyToken } = require("./helpers/jwt");
+require('dotenv').config();
 
 const {
   typeDefs: typeDefsUser,
@@ -31,7 +32,7 @@ const server = new ApolloServer({
 
 (async () => {
   const { url } = await startStandaloneServer(server, {
-    listen: {port: 3000},
+    listen: {port: process.env.PORT},
     context: ({req, res}) => {
       return {
         id: "123",
