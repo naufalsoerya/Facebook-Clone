@@ -14,6 +14,7 @@ const typeDefs = `#graphql
       password: String
       followerDetail: [UserDetail]
       followingDetail: [UserDetail]
+      userPost: [UserPost]
     }
     type UserDetail {
       _id: ID
@@ -22,12 +23,24 @@ const typeDefs = `#graphql
       email: String!
       password: String!
     }
+    type UserPost {
+      _id: ID
+      content: String!
+      tags: [String]
+      imgUrl: String!
+      authorId: ID!
+      comments: [Comments]
+      likes: [Likes]
+      createdAt: String
+      updatedAt: String
+    }
     type Token {
       accessToken: String
     }
     type Query {
       user(_id: ID): User
       searchUsers(username: String!): User
+      profileUser: User
     }
     type Mutation {
       createUser(name: String, username: String!, email: String!, password: String!): User
@@ -67,6 +80,11 @@ const resolvers = {
       } catch (error) {
         throw error;
       }
+    },
+    profileUser: async (_, __, { auth }) => {
+      const data = auth();
+      const profileUser = await User.profileUser(data.id);
+      return profileUser;
     },
   },
   Mutation: {

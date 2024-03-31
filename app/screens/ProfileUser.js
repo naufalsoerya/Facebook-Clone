@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
+import CardProfile from "../components/CardProfile";
 
 const PROFILE_USER = gql`
   query Query($id: ID) {
@@ -37,8 +38,68 @@ const PROFILE_USER = gql`
   }
 `;
 
+const PROFILE_POST = gql`
+  query ExampleQuery {
+  profileUser {
+    _id
+    name
+    username
+    email
+    password
+    followerDetail {
+      _id
+      name
+      username
+      email
+      password
+    }
+    followingDetail {
+      _id
+      name
+      username
+      email
+      password
+    }
+    userPost {
+      _id
+      content
+      tags
+      imgUrl
+      authorId
+      comments {
+        content
+        username
+        createdAt
+        updatedAt
+      }
+      likes {
+        username
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+`;
+
 function ProfileUser() {
   const { loading, error, data } = useQuery(PROFILE_USER);
+
+  const postUser = useQuery(PROFILE_POST);
+  const loadingPost = postUser.loading;
+  const errorPost = postUser.error;
+  const dataPost = postUser.data;
+
+  if (loadingPost) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#00ff00" />
+      </View>
+    );
+  }
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -49,8 +110,11 @@ function ProfileUser() {
 
   const user = data.user;
 
-  console.log(user, "<<<<<<<<<,");
+  const datas = dataPost.profileUser;
 
+  // console.log(datas, "<<<<< ini datanya")
+
+  const username = dataPost.profileUser.username;
   return (
     <>
       <ScrollView contentContainerStyle={styles.container}>
@@ -67,9 +131,7 @@ function ProfileUser() {
               Followers: {user.followerDetail.length}
             </Text>
             {user?.followerDetail.map((follower, index) => (
-              <Text key={index} style={styles.detailText}>
-                
-              </Text>
+              <Text key={index} style={styles.detailText}></Text>
             ))}
           </View>
           <View style={styles.section}>
@@ -77,11 +139,14 @@ function ProfileUser() {
               Following: {user.followingDetail.length}
             </Text>
             {user?.followingDetail.map((following, index) => (
-              <Text key={index} style={styles.detailText}>
-                
-              </Text>
+              <Text key={index} style={styles.detailText}></Text>
             ))}
           </View>
+        </View>
+        <View style={{ flex: 1 }}>
+          {datas?.userPost.map((post, index) => {
+            return <CardProfile key={index} post={post} username={username} />;
+          })}
         </View>
       </ScrollView>
     </>
@@ -112,7 +177,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "gray",
-    marginBottom: 17,
+    marginBottom: 30,
   },
   email: {
     fontSize: 16,
