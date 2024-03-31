@@ -1,35 +1,54 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/FontAwesome";
 
 function Card({ post }) {
+  const navigation = useNavigation();
+
   return (
     <>
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <Image
-            source={{ uri: "https://picsum.photos/100/500" }}
-            style={styles.avatar}
-          />
-          <Text style={styles.username}>{post.author.username}</Text>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("PostDetail", { getPostByIdId: post._id })
+        }
+      >
+        <View style={styles.card}>
+          <View style={styles.header}>
+            <Image
+              source={{ uri: "https://picsum.photos/100/500" }}
+              style={styles.avatar}
+            />
+            <Text style={styles.username}>{post.author.username}</Text>
+          </View>
+          <View style={styles.footer}>
+            <Text style={styles.caption}>{post.content}</Text>
+          </View>
+          <Image source={{ uri: post.imgUrl }} style={styles.image} />
+          <View style={styles.line}></View>
+          <View style={styles.container}>
+            <TouchableOpacity 
+              style={styles.button}
+              onPress={() =>
+                navigation.navigate("PostDetail", { getPostByIdId: post._id })
+              }
+            >
+              <Icon name="thumbs-up" size={18} color="gray" />
+              <Text style={styles.text}>Like</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.button}
+              onPress={() =>
+                navigation.navigate("PostDetail", { getPostByIdId: post._id })
+              }
+            >
+              <Icon name="comments" size={18} color="gray" />
+              <Text style={styles.text}>Comment</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.line}></View>
         </View>
-        <View style={styles.footer}>
-          <Text style={styles.caption}>{post.content}</Text>
-        </View>
-        <Image source={{ uri: post.imgUrl }} style={styles.image} />
-        <View style={styles.line}></View>
-        <View style={styles.container}>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="thumbs-up" size={18} color="gray" />
-            <Text style={styles.text}>Like</Text> 
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="comments" size={18} color="gray" /> 
-            <Text style={styles.text}>Comment</Text> 
-          </TouchableOpacity>
-        </View>
-        <View style={styles.line}></View>
-      </View>
+      </TouchableOpacity>
     </>
   );
 }
@@ -54,16 +73,16 @@ const styles = StyleSheet.create({
     marginStart: 12,
   },
   container: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'start',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "start",
     marginTop: 0,
     marginStart: 0,
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'start',
-    paddingLeft: 35
+    flexDirection: "row",
+    alignItems: "start",
+    paddingLeft: 35,
   },
   text: {
     marginStart: 10,
@@ -93,7 +112,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   caption: {
-    fontSize: 16
+    fontSize: 16,
   },
 });
 

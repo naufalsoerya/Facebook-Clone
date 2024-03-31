@@ -46,7 +46,7 @@ function StackNavigator() {
               <Stack.Screen
                 name="PostDetail"
                 component={PostDetail}
-                options={{ headerShown: false }}
+                options={{ headerShown: true }}
               />
             </>
           )}

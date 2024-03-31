@@ -53,6 +53,7 @@ function TabNavigator() {
       <Tab.Screen
         name="Profile"
         component={Profile}
+        initialParams={""}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons

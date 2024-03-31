@@ -9,7 +9,7 @@ import { useQuery } from "@apollo/client";
 import { useCallback, useState } from "react";
 import GET_ALL_POST from "../queries/GetAllPost";
 
-function HomeScreen({ navigation }) {
+function HomeScreen({ route }) {
   const { loading, error, data, refetch } = useQuery(GET_ALL_POST, {
     notifyOnNetworkStatusChange: true,
   });

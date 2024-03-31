@@ -58,7 +58,7 @@ function CreatePost({ navigation }) {
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <View style={styles.container}>
           <View style={{ alignItems: "center" }}>
-            <Text style={styles.text}>Create Your Post</Text>
+            <Text style={styles.text}>Facebook Post</Text>
           </View>
           <View style={styles.inputGroup}>
             <TextInput
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: "bold",
-    fontSize: 25,
+    fontSize: 22,
     color: "#3b5998",
     marginBottom: 20,
   },
