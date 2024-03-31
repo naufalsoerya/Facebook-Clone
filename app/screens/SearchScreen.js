@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import {
   View,
   TextInput,
-  FlatList,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
+  TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { useQuery, gql } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
@@ -22,52 +22,44 @@ function Search() {
 
   const { data, loading, error } = result;
 
-  // console.log(result, "<<<<<< ini result");
-
-  // if (loading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <ActivityIndicator size="large" color="#00ff00" />
-  //     </View>
-  //   );
-  // }
-  // if (error) return <Text>Error: {error.message}</Text>;
-
-  // console.log(data, "<<<<<<<< ini data");
-  return (
-    <>
-      <View style={styles.container}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by username"
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          autoCapitalize="none"
-        />
-        {loading && <Text>Loading...</Text>}
-        {error && <Text>{error.message}</Text>}
-        <FlatList
-          data={data?.searchUsers}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.resultItem}
-              onPress={() => navigation.navigate("Profile", { id: item._id })}
-            >
-              <Text style={styles.name}>({item.username})</Text>
-            </TouchableOpacity>
-          )}
-        />
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#00ff00" />
       </View>
-    </>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search by username"
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+        autoCapitalize="none"
+      />
+      <ScrollView style={{ flex: 1 }}>
+        <TouchableOpacity
+          key={data?.searchUsers._id}
+          style={styles.resultItem}
+          onPress={() =>
+            navigation.navigate("Profile", { id: data?.searchUsers._id })
+          }
+        >
+          <Text style={styles.name}>{data?.searchUsers.username}</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    padding: 30,
+    margin: 40,
   },
   searchInput: {
     height: 40,
@@ -83,8 +75,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "#cccccc",
   },
   name: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "bold",
+    marginLeft: -5,
   },
   email: {
     fontSize: 16,
